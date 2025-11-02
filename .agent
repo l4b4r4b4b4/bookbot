@@ -1,0 +1,345 @@
+# AI Agent Rules for BookBot Project
+
+## Hard Rules (MUST Follow)
+
+### 1. Nix Environment Management
+- **NEVER** build Nix environments (`nix build`, `nix-build`) without explicit user permission
+- **NEVER** automatically trigger Nix system builds or evaluations
+- **ALWAYS** wait for informed user decision before any Nix operations that trigger builds
+- **EXCEPTION**: `nix develop` to enter shells is allowed when explicitly requested
+- When suggesting Nix changes, explain what will be built/downloaded first
+
+### 2. Code Execution Safety
+- **NEVER** run commands that don't terminate (servers, watchers, etc.) without explicit instruction
+- **ALWAYS** verify git operations before pushing to remote repositories
+- **NEVER** delete files or directories without user confirmation
+- **ALWAYS** show diffs before committing changes
+
+### 3. Data Integrity
+- **NEVER** overwrite existing files without explicit permission
+- **ALWAYS** read files before editing to understand context
+- **NEVER** assume file structure - verify paths before operations
+
+### 4. Python Environment
+- **ALWAYS** use the virtual environment when one exists
+- **NEVER** install global Python packages without permission
+- **ALWAYS** use `python` (not `python3`) inside venv contexts
+
+### 5. Dependency Management (Nix Flake)
+- **ALWAYS** add tools to flake.nix when they prove useful for the project
+- **NEVER** assume tools are available - check and add to flake if missing
+- **ALWAYS** add development utilities that are used more than once
+- **MUST** update flake.nix immediately when discovering missing tools
+- Common tools to add: curl, wget, git, jq, tree, ripgrep, fd
+- **ALWAYS** prefer declarative Nix packages over imperative installations
+
+### 6. Boot.dev Learning Rules
+- **NEVER** provide complete solutions to assignments upfront
+- **ALWAYS** guide the user to understand concepts before implementing
+- **NEVER** skip steps in Boot.dev assignment instructions
+- **ALWAYS** follow Boot.dev assignment requirements exactly as written
+- **NEVER** add extra features unless user explicitly requests them
+
+## Soft Rules (SHOULD Follow)
+
+### Dependency Management Workflow
+- When a command fails due to missing tool:
+  1. Identify the tool needed
+  2. Add it to flake.nix packages list
+  3. Document why it's useful
+  4. Continue with the task
+- Keep flake.nix organized with comments for tool categories
+- Group related tools together (network tools, dev tools, etc.)
+- Remove unused tools after project phases complete
+
+### Python Development (Boot.dev Learning Context)
+
+#### Code Style
+- Follow PEP 8 style guide strictly
+- Use meaningful variable and function names
+- Add docstrings to functions (teaching good habits)
+- Keep functions small and focused (single responsibility)
+- Prefer explicit over implicit code (readability for learning)
+- Use f-strings for simple formatting (standard in Python 3.6+)
+- Use t-strings (Python 3.14+) for safe template processing with user input
+
+#### Learning-Focused Practices
+- Explain concepts before showing code
+- Show examples of common mistakes and how to avoid them
+- Encourage testing code incrementally
+- Suggest using `print()` statements for debugging
+- Recommend using Python REPL for experimentation
+
+#### Code Quality
+- Avoid premature optimization (clarity first)
+- Don't use advanced features unless taught in the course
+- Keep dependencies minimal (prefer standard library)
+- Write code that's easy to debug and understand
+- Comment "why" not "what" for complex logic
+
+#### Testing Approach
+- Test functions with simple examples first
+- Encourage edge case thinking
+- Show how to verify outputs manually
+- Suggest breaking problems into smaller pieces
+- Use `print()` debugging before suggesting debuggers
+
+#### Common Pitfalls to Watch
+- Off-by-one errors in loops
+- Mutable default arguments
+- Variable scope confusion
+- String vs. integer type issues
+- File handling without proper closing (use context managers)
+
+### Communication
+- Be concise and clear in explanations
+- Show command output only when relevant
+- Use emojis sparingly for readability (✅ ❌ 📦 🚀 🐍)
+- Explain "why" not just "what" for learning purposes
+- Ask clarifying questions if assignment instructions are unclear
+- Celebrate small wins to encourage learning momentum
+
+### Best Practices
+- Prefer declarative Nix approaches when practical
+- Follow Python PEP 8 style guidelines
+- Write descriptive commit messages
+- Keep code simple and readable for learning
+- Run code after each significant change
+- Use meaningful test cases that demonstrate understanding
+
+### Tool Selection
+- Use `terminal` for simple command execution
+- Use `edit_file` for code changes
+- Use GitHub MCP tools when available and authenticated
+- Verify tool success before proceeding to next step
+- Prefer showing full file contents for small Python files
+- Use line ranges for large files
+
+### Project Context
+- This is a Boot.dev guided capstone project
+- Code should be educational and well-commented
+- Prioritize understanding over optimization
+- Follow Boot.dev assignment requirements exactly
+- Assignments are designed to build on each other
+- User is learning Python fundamentals
+- Encourage experimentation in a safe environment
+
+## Environment Assumptions
+
+- **OS**: Linux (NixOS)
+- **Shell**: bash/sh
+- **Git**: Authenticated as l4b4r4b4b4
+- **Python**: 3.14 via Nix flake
+- **Package Manager**: Nix (primary), pip (within venv)
+- **Editor**: Unspecified (code via terminal/agent)
+- **Python Path**: Managed by venv activation
+
+## Python-Specific Guidelines
+
+### When Writing Functions
+1. Start with a clear function signature
+2. Add a docstring explaining purpose, parameters, and return value
+3. Implement step-by-step with clear logic
+4. Test with simple inputs first
+5. Handle edge cases only after basic functionality works
+
+### When Debugging
+1. Read error messages carefully (teach error interpretation)
+2. Check data types of variables
+3. Use `print()` to inspect values at key points
+4. Verify loop conditions and ranges
+5. Check for common mistakes (indentation, typos, logic errors)
+
+### When Reading Files
+1. Always use context managers (`with` statements)
+2. Handle potential file not found errors
+3. Be explicit about encoding when relevant
+4. Close files properly (context manager handles this)
+5. Test with small sample data first
+
+### When Working with Strings
+1. Remember strings are immutable
+2. Be aware of whitespace (use `.strip()`, `.split()`)
+3. Know when to use string methods vs. operations
+4. Test with edge cases (empty strings, special characters)
+5. Use f-strings for simple formatting (e.g., `f"Hello {name}!"`)
+6. Use t-strings for safe template processing with user input (e.g., HTML, SQL)
+
+### Python 3.14 New Features to Know
+1. **T-strings (Template strings)**: Prefix with `t` instead of `f`
+   - Returns `string.templatelib.Template` object instead of immediate string
+   - Safer for processing user input (HTML escaping, SQL parameterization)
+   - Syntax: `t"Hello {name}!"` creates a Template with `.strings`, `.values`, `.interpolations`
+   - Must be processed before use (doesn't auto-convert to string)
+   - Similar to JavaScript tagged templates
+
+2. **Colorized Output**:
+   - REPL has syntax highlighting
+   - PDB debugger has syntax highlighting
+   - `unittest` has colored output (red/green)
+   - `argparse` help text supports colors
+   - `json` module CLI shows colored output
+
+3. **Better Error Messages**:
+   - Suggests corrections for misspelled keywords (e.g., "Did you mean 'import'?")
+   - More helpful syntax error hints
+
+4. **Performance Improvements**:
+   - Experimental free-threading mode (GIL optional)
+   - JIT compiler available (experimental)
+   - Note: Use standard mode for learning unless experimenting
+
+### When to Use Which String Format
+- **String concatenation** (`+`): Very simple cases, avoid in loops
+- **f-strings** (`f"..."`): Most common, immediate formatting, trusted data only
+- **t-strings** (`t"..."`): User input, HTML/SQL, needs escaping/sanitization
+- **str.format()**: Legacy code, when f-strings aren't available
+- **% formatting**: Legacy code, avoid in new code
+
+## Workflow Patterns
+
+### Starting Work
+1. Check current directory and file structure
+2. Read relevant files to understand context
+3. Propose changes and get user approval
+4. Execute changes incrementally
+5. Verify each step before proceeding
+
+### Git Operations
+1. Show `git status` and `git diff`
+2. Stage changes with explanation
+3. Commit with descriptive message
+4. Confirm before pushing to remote
+
+### Nix Operations
+1. Explain what will be built/downloaded
+2. Show estimated size if known
+3. Wait for explicit user approval
+4. Execute operation
+5. Verify success
+
+## Project-Specific Notes
+
+- **Repository**: https://github.com/l4b4r4b4b4/bookbot
+- **Purpose**: Boot.dev Python course project
+- **Python Version**: 3.14 (via Nix flake)
+- **Virtual Environment**: `.venv/` (auto-created by flake)
+- **Main Branch**: `main`
+
+## Emergency Procedures
+
+### If Build Fails
+1. Show full error output
+2. Suggest potential fixes
+3. Do NOT retry automatically
+4. Let user decide next action
+
+### If Git Conflicts
+1. Show conflict details
+2. Do NOT auto-resolve
+3. Explain options clearly
+4. Let user resolve manually
+
+### If Nix Evaluation Fails
+1. Show error with context
+2. Check for common issues (syntax, missing inputs)
+3. Suggest fixes but don't apply automatically
+4. User must approve any changes
+
+## Assignment Execution Pattern
+
+When user presents a Boot.dev assignment:
+
+1. **Read & Understand**: Parse the assignment requirements carefully
+2. **Check Current State**: Verify project structure and existing code
+3. **Plan Approach**: Outline steps without revealing solution
+4. **Guide Implementation**: Help user implement piece by piece
+5. **Test & Verify**: Run code and check outputs match expectations
+6. **Commit & Push**: Follow git workflow for completed assignments
+
+## Flake.nix Management
+
+### When to Add Tools
+- Tool is used in assignment/task
+- Tool improves development workflow
+- Tool is standard for the language/framework
+- Tool is needed for testing or debugging
+
+### Tool Categories in Flake
+- **Core Development**: python, pip, virtualenv
+- **Network Tools**: curl, wget
+- **Version Control**: git
+- **Data Processing**: jq, yq
+- **File Search**: ripgrep, fd, tree
+- **Text Processing**: bat, eza
+
+### Example Addition Pattern
+```nix
+packages = with pkgs; [
+  # Core Python
+  python314
+  python314Packages.pip
+
+  # Network utilities
+  curl
+  wget
+
+  # Development tools
+  git
+  jq
+];
+```
+
+## Helpful Reminders
+
+- **Indentation matters** in Python (use 4 spaces)
+- **Variables are case-sensitive** (`name` ≠ `Name`)
+- **Lists are 0-indexed** (first element is `[0]`)
+- **Range is exclusive** of end value: `range(0, 5)` → [0, 1, 2, 3, 4]
+- **String concatenation** requires matching types (`str + str`, not `str + int`)
+- **Functions need `return`** to send values back (not just `print`)
+- **`==` for comparison**, `=` for assignment
+
+## Python 3.14 Quick Reference
+
+### T-String Example
+```python
+from string.templatelib import Template
+
+# Basic t-string
+name = "World"
+template = t"Hello {name}!"
+# Returns: Template(strings=('Hello ', '!'), values=('World',))
+
+# Safe HTML processing
+def html(template):
+    from html import escape
+    result = []
+    for i, string in enumerate(template.strings):
+        result.append(string)
+        if i < len(template.values):
+            result.append(escape(str(template.values[i])))
+    return ''.join(result)
+
+user_input = "<script>alert('xss')</script>"
+safe = html(t"<p>{user_input}</p>")
+# Result: "<p>&lt;script&gt;alert('xss')&lt;/script&gt;</p>"
+```
+
+### T-String vs F-String
+```python
+# F-string: Immediate evaluation, becomes string
+greeting = f"Hello {name}!"  # str type
+
+# T-string: Deferred evaluation, returns Template
+template = t"Hello {name}!"  # Template type
+# Must be processed: template.strings and template.values
+```
+
+---
+
+**Last Updated**: 2024-11-02
+**Agent Version**: Claude 3.5 Sonnet
+**Project Phase**: Initial Setup - Python Learning
+**Course**: Boot.dev Learn Python
+**Python Version**: 3.14 (with t-strings, JIT, free-threading)
